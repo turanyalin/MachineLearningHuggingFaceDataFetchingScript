@@ -6,14 +6,11 @@ from huggingface_hub import HfApi
 from config import token
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# ------------------------------------------------------------------------------
-# 1) Configuration and Data Folder Setup
-# ------------------------------------------------------------------------------
 data_folder = '/Users/turanyalincelik/HF-Analysis/Data'
 os.makedirs(data_folder, exist_ok=True)
 
 # ------------------------------------------------------------------------------
-# 2) Retrieve Top 1% Models (by downloads) from the HF Hub
+# 2) Retrieve Top 1% Models
 # ------------------------------------------------------------------------------
 estimated_total_models = 1531678
 top_1pct_count = max(1, int(estimated_total_models * 0.01))
@@ -53,7 +50,7 @@ def process_model(model_id):
     }
 
 # ------------------------------------------------------------------------------
-# 4) Retrieve Commit Data & Build Edgelist in Parallel
+# 4) Retrieve Commit Data
 # ------------------------------------------------------------------------------
 edgelist = []
 public_repositories = 0
