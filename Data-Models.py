@@ -2,6 +2,8 @@ import os
 import pandas as pd
 from huggingface_hub import HfApi
 from concurrent.futures import ThreadPoolExecutor
+import certifi
+from pymongo import MongoClient
 from config import token  # Ensure your token is configured
 
 # ------------------------------------------------------------------------------
@@ -77,3 +79,20 @@ df.sort_values(by='downloads', ascending=False, inplace=True, na_position='last'
 csv_path = os.path.join(data_folder, 'hf-models-top1pct.csv')
 df.to_csv(csv_path, index=False)
 print(f"Saved top 1% models data (total: {len(df)}) to: {csv_path}")
+
+# ------------------------------------------------------------------------------
+# 5) Save the data to MongoDB
+# ------------------------------------------------------------------------------
+mongo_uri = "mongodb+srv://turanyalin:TuranYalin123456789@huggingfacemetadata.qwvgw.mongodb.net/?retryWrites=true&w=majority&appName=HuggingFaceMetaData"
+client = MongoClient(mongo_uri, tls=True, tlsCAFile=certifi.where())
+
+# Use (or create) the database and collection
+db = client['HuggingFaceMetaData']
+collection = db['top_models']
+
+# Insert the processed model data into MongoDB
+result = collection.insert_many(models_data)
+print(f"Inserted {len(result.inserted_ids)} documents into MongoDB collection 'Top1%ModelsData'.")
+
+# Close the MongoDB connection when finished
+client.close()
